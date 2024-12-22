@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import Navbar from "../components/nav";
 import Banner from "../components/banner";
 import Footer from "../components/footer";
@@ -7,7 +8,19 @@ import { Link } from "react-router-dom";
 const Pokedex = () => {
   const [pokemons, setPokemons] = useState([]); 
   const [loading, setLoading] = useState(true);
-
+  const navigate = useNavigate();
+  const [userName, setUserName] = useState('');
+  
+  useEffect(() => {
+    const userData = sessionStorage.getItem('user');
+    if (userData) {
+      const user = JSON.parse(userData);
+      setUserName(user.name);
+    }else{
+      navigate('/connexion');
+    }
+  }, []);
+  
   useEffect(() => {
     fetch("https://tyradex.vercel.app/api/v1/pokemon")
       .then((response) => response.json())
@@ -20,6 +33,7 @@ const Pokedex = () => {
         setLoading(false);
       });
   }, []);
+  
 
   if (loading) {
     return <div>Chargement...</div>;

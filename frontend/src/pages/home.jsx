@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { useNavigate } from "react-router-dom"; // Pour naviguer via React Router
+import { useNavigate } from "react-router-dom";
 import Navbar from "../components/nav";
 import Banner from "../components/banner";
 import Footer from "../components/footer";
@@ -13,7 +13,9 @@ const Home = () => {
     const userData = sessionStorage.getItem('user');
     if (userData) {
       const user = JSON.parse(userData);
-      setUserName(user.name); // Assurez-vous que "name" correspond au champ de votre API
+      setUserName(user.name);
+    }else{
+      navigate('/connexion');
     }
   }, []);
 

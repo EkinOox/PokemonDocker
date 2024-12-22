@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
-import { Link } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import Navbar from "../components/nav";
 import Banner from "../components/banner";
 import Footer from "../components/footer";
@@ -9,7 +9,19 @@ import '../output.css';
 const PokemonGen = () => {
   const { genId } = useParams();
   const [pokemons, setPokemons] = useState([]);
+  const navigate = useNavigate();
+  const [userName, setUserName] = useState('');
 
+  useEffect(() => {
+    const userData = sessionStorage.getItem('user');
+    if (userData) {
+      const user = JSON.parse(userData);
+      setUserName(user.name);
+    }else{
+      navigate('/connexion');
+    }
+  }, []);
+  
   useEffect(() => {
     fetch(`https://tyradex.vercel.app/api/v1/gen/${genId}`)
       .then(response => response.json())

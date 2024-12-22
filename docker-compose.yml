@@ -35,7 +35,7 @@ services:
     ports:
       - "${BACKEND_PORT}:${BACKEND_PORT}"
     environment:
-      DATABASE_URL: "mysql://pokemon_user:pokemon_password@mariadb:${MARIADB_PORT}/pokemon"
+      DATABASE_URL: "mysql://pokemon_user:pokemon_password@mariadb-docker:${MARIADB_PORT}/pokemon"
     depends_on:
       - mariadb-docker
     networks:
@@ -72,7 +72,7 @@ services:
     image: phpmyadmin/phpmyadmin
     container_name: phpmyadmin-docker
     environment:
-      PMA_HOST: mariadb
+      PMA_HOST: mariadb-docker
       PMA_PORT: ${MARIADB_PORT}
       MYSQL_ROOT_PASSWORD: root_password
     networks:
