@@ -19,7 +19,7 @@ services:
     networks:
       - front-back
     healthcheck:
-      test: [ "CMD", "curl", "-f", "10.0.3.16" ]
+      test: [ "CMD", "curl", "-f", "frontend-docker" ]
       interval: 30s
       retries: 3
       start_period: 10s
@@ -42,7 +42,7 @@ services:
       - back-db
       - front-back
     healthcheck:
-      test: [ "CMD", "curl", "-f", "10.0.2.43" ]
+      test: [ "CMD", "curl", "-f", "backend-docker" ]
       interval: 30s
       retries: 3
       start_period: 10s
@@ -75,10 +75,14 @@ services:
       PMA_HOST: mariadb-docker
       PMA_PORT: ${MARIADB_PORT}
       MYSQL_ROOT_PASSWORD: root_password
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+    ports:
+      - "${PHPMYADMIN_PORT}:${PHPMYADMIN_PORT}"
     networks:
       - back-db
     healthcheck:
-      test: [ "CMD", "curl", "-f", "10.0.2.41" ]
+      test: [ "CMD", "curl", "-f", "phpmyadmin-docker" ]
       interval: 30s
       retries: 3
       start_period: 10s
