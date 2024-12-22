@@ -1,9 +1,9 @@
 services:
-  frontend:
+  frontend-docker:
     build:
       context: ./frontend
       dockerfile: dev.Dockerfile
-    container_name: frontend
+    container_name: frontend-docker
     extra_hosts:
       - "host.docker.internal:host-gateway"
     ports:
@@ -12,7 +12,7 @@ services:
       - VITE_HOST=0.0.0.0
       - API_URL=http://backend:${BACKEND_PORT}
     depends_on:
-      - backend
+      - backend-docker
     volumes:
       - ./frontend:/app
       - /app/node_modules
@@ -25,11 +25,11 @@ services:
       start_period: 10s
       timeout: 10s
 
-  backend:
+  backend-docker:
     build:
       context: ./backend
       dockerfile: dev.Dockerfile
-    container_name: backend
+    container_name: backend-docker
     extra_hosts:
       - "host.docker.internal:host-gateway"
     ports:
@@ -37,7 +37,7 @@ services:
     environment:
       DATABASE_URL: "mysql://pokemon_user:pokemon_password@mariadb:${MARIADB_PORT}/pokemon"
     depends_on:
-      - mariadb
+      - mariadb-docker
     networks:
       - back-db
       - front-back
@@ -48,9 +48,9 @@ services:
       start_period: 10s
       timeout: 10s
 
-  mariadb:
+  mariadb-docker:
     image: mariadb:10.5
-    container_name: mariadb
+    container_name: mariadb-docker
     environment:
       MYSQL_ROOT_PASSWORD: root_password
       MYSQL_DATABASE: pokemon
@@ -68,9 +68,9 @@ services:
       start_period: 10s
       timeout: 10s
 
-  phpmyadmin:
+  phpmyadmin-docker:
     image: phpmyadmin/phpmyadmin
-    container_name: phpmyadmin
+    container_name: phpmyadmin-docker
     environment:
       PMA_HOST: mariadb
       PMA_PORT: ${MARIADB_PORT}
@@ -84,9 +84,9 @@ services:
       start_period: 10s
       timeout: 10s
 
-  uptime-kuma:
+  uptime-kuma-docker:
     image: louislam/uptime-kuma
-    container_name: uptime-kuma
+    container_name: uptime-kuma-docker
     ports:
       - "${UPTIME_KUMA_PORT}:${UPTIME_KUMA_PORT}"
     extra_hosts:
@@ -103,9 +103,9 @@ services:
       start_period: 10s
       timeout: 10s
 
-  portainer:
+  portainer-docker:
     image: portainer/portainer-ce:latest
-    container_name: portainer
+    container_name: portainer-docker
     restart: "no"
     ports:
       - "${PORTAINER_PORT}:${PORTAINER_PORT}"
