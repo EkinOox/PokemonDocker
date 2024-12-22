@@ -1,4 +1,4 @@
-FROM php:8.2-fpm-alpine
+FROM php:8.2-cli
 
 # Installation des dépendances de base
 RUN apt-get update && apt-get install -y \
