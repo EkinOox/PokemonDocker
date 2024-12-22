@@ -19,7 +19,7 @@ services:
     networks:
       - front-back
     healthcheck:
-      test: [ "CMD", "curl", "-f", "frontend-docker" ]
+      test: [ "CMD", "curl", "-f", "frontend-docker"]
       interval: 30s
       retries: 3
       start_period: 10s
@@ -49,7 +49,7 @@ services:
       timeout: 10s
 
   mariadb-docker:
-    image: mariadb:10.5
+    image: mariadb
     container_name: mariadb-docker
     environment:
       MYSQL_ROOT_PASSWORD: root_password
