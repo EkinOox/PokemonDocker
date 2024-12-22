@@ -1,122 +1,124 @@
-# Rapport de Projet Docker : Application basé sur les Pokémons
+# Rapport de Projet Docker : Application basÃ© sur les PokÃ©mons
 
 ## Objectif du Projet
-Le but de ce projet était de conteneuriser une application Pokémon composée d'un frontend en React, d'un backend en Symfony, et d'une base de données MariaDB, le tout orchestré à l'aide de Docker. Les objectifs principaux incluaient :
+Le but de ce projet Ã©tait de conteneuriser une application PokÃ©mon composÃ©e d'un frontend en React, d'un backend en Symfony, et d'une base de donnÃ©es MariaDB, le tout orchestrÃ© Ã  l'aide de Docker. Les objectifs principaux incluaient :
 
-1. Mise en place de conteneurs séparés pour chaque service :
+1. Mise en place de conteneurs sÃ©parÃ©s pour chaque service :
    - Frontend (React)
    - Backend (Symfony)
-   - Base de données (MariaDB)
-   - Outils supplémentaires (phpMyAdmin, Uptime Kuma, Portainer)
+   - Base de donnÃ©es (MariaDB)
+   - Outils supplÃ©mentaires (phpMyAdmin, Uptime Kuma, Portainer)
 
 2. Utilisation de bonnes pratiques comme :
-   - Création d'utilisateurs non-root pour les conteneurs.
-   - Mise en place de healthchecks pour surveiller l'état des services.
-   - Utilisation de réseaux Docker sécurisés (overlay).
+   - CrÃ©ation d'utilisateurs non-root pour les conteneurs.
+   - Mise en place de healthchecks pour surveiller l'Ã©tat des services.
+   - Utilisation de rÃ©seaux Docker sÃ©curisÃ©s (overlay).
 
-3. Résolution des problèmes rencontrés lors du développement et du déploiement.
+3. RÃ©solution des problÃ¨mes rencontrÃ©s lors du dÃ©veloppement et du dÃ©ploiement.
 
 ---
 
-## Étapes Réalisées
+## Ã‰tapes RÃ©alisÃ©es
 
 ### 1. **Configuration Initiale du Projet**
 
-- Création de la structure du projet avec des dossiers dédiés :
+- CrÃ©ation de la structure du projet avec des dossiers dÃ©diÃ©s :
   - `frontend/` pour React.
   - `backend/` pour Symfony.
   - `database/` pour les fichiers SQL initiaux.
 
-- Écriture d'un fichier `docker-compose.yml` pour orchestrer les différents services.
+- Ã‰criture d'un fichier `docker-compose.yml` pour orchestrer les diffÃ©rents services.
 
 ### 2. **Mise en Place des Dockerfiles**
 
 #### Frontend
-- Création d'un `Dockerfile` pour React basé sur l'image `node:18-alpine`.
-- Ajout d'un utilisateur non-root pour améliorer la sécurité.
-- Installation des dépendances avec `npm install` et exécution en mode développement avec Tailwind.
+- CrÃ©ation d'un `Dockerfile` pour React basÃ© sur l'image `node:18-alpine`.
+- Ajout d'un utilisateur non-root pour amÃ©liorer la sÃ©curitÃ©.
+- Installation des dÃ©pendances avec `npm install` et exÃ©cution en mode dÃ©veloppement avec Tailwind.
 
 #### Backend
-- Création d'un `Dockerfile` pour Symfony basé sur l'image `php:8.2-cli`.
-- Installation de Composer et des extensions nécessaires (PDO, ZIP, etc.).
+- CrÃ©ation d'un `Dockerfile` pour Symfony basÃ© sur l'image `php:8.2-cli`.
+- Installation de Composer et des extensions nÃ©cessaires (PDO, ZIP, etc.).
 - Ajout d'un utilisateur non-root.
 
-### 3. **Ajout de Services Complémentaires**
-- **phpMyAdmin** pour gérer la base de données MariaDB visuellement.
-- **Uptime Kuma** pour surveiller l'état des conteneurs.
-- **Portainer** pour gérer les conteneurs et visualiser les logs facilement.
+### 3. **Ajout de Services ComplÃ©mentaires**
+- **phpMyAdmin** pour gÃ©rer la base de donnÃ©es MariaDB visuellement.
+- **Uptime Kuma** pour surveiller l'Ã©tat des conteneurs.
+- **Portainer** pour gÃ©rer les conteneurs et visualiser les logs facilement.
 
-### 4. **Réseaux et Volumes**
-- Mise en place de réseaux Docker overlay sécurisés pour :
+### 4. **RÃ©seaux et Volumes**
+- Mise en place de rÃ©seaux Docker overlay sÃ©curisÃ©s pour :
   - Communication entre frontend et backend.
-  - Communication entre backend et la base de données.
+  - Communication entre backend et la base de donnÃ©es.
 
-- Définition de volumes pour :
-  - Persistance des données de la base MariaDB.
-  - Données d'Uptime Kuma.
+- DÃ©finition de volumes pour :
+  - Persistance des donnÃ©es de la base MariaDB.
+  - DonnÃ©es d'Uptime Kuma.
   - Configuration de Portainer.
 
 ---
 
-## Défis Rencontrés
+## DÃ©fis RencontrÃ©s
 
-### 1. **Problèmes de Connexion entre les Conteneurs**
-- **Problème** : Le backend ne parvenait pas à se connecter à la base de données MariaDB.
+### 1. **ProblÃ¨mes de Connexion entre les Conteneurs**
+- **ProblÃ¨me** : Le backend ne parvenait pas Ã  se connecter Ã  la base de donnÃ©es MariaDB.
 - **Solution** :
-  - Vérification et correction de l'URL de connexion dans les variables d'environnement (`DATABASE_URL`).
-  - Ajout de dépendances explicites dans `docker-compose.yml`.
+  - VÃ©rification et correction de l'URL de connexion dans les variables d'environnement (`DATABASE_URL`).
+  - Ajout de dÃ©pendances explicites dans `docker-compose.yml`.
 
 ### 2. **Utilisation d'Utilisateurs Non-root**
-- **Problème** : Les conteneurs utilisant un utilisateur non-root rencontraient des erreurs de permissions.
+- **ProblÃ¨me** : Les conteneurs utilisant un utilisateur non-root rencontraient des erreurs de permissions.
 - **Solution** :
-  - Utilisation de `chown` pour attribuer les permissions appropriées.
+  - Utilisation de `chown` pour attribuer les permissions appropriÃ©es.
   - Ajout de `--chown` lors de la copie des fichiers avec `COPY` dans les Dockerfiles.
 
-### 3. **Ports Mal Configurés**
-- **Problème** : Le service `mariadb` renvoyait une erreur dans `docker-compose.yml` : "`services.mariadb.ports.0 must be a number`".
+### 3. **Ports Mal ConfigurÃ©s**
+- **ProblÃ¨me** : Le service `mariadb` renvoyait une erreur dans `docker-compose.yml` : "`services.mariadb.ports.0 must be a number`".
 - **Solution** :
-  - Suppression des ports inutilisés pour MariaDB, car la connexion se fait en interne via Docker.
+  - Suppression des ports inutilisÃ©s pour MariaDB, car la connexion se fait en interne via Docker.
 
 ### 4. **Surveillance des Conteneurs**
-- **Problème** : Difficulté à surveiller l'état des conteneurs pendant le développement.
+- **ProblÃ¨me** : DifficultÃ© Ã  surveiller l'Ã©tat des conteneurs pendant le dÃ©veloppement.
 - **Solution** :
   - Mise en place de healthchecks pour chaque service dans `docker-compose.yml`.
   - Ajout d'Uptime Kuma pour une surveillance en continu.
 
 ---
 
-## Bonnes Pratiques Adoptées
+## Bonnes Pratiques AdoptÃ©es
 
-1. Utilisation d'utilisateurs non-root pour réduire les risques de sécurité.
-2. Mise en place de healthchecks pour détecter rapidement les erreurs dans les services.
-3. Sécurisation des réseaux Docker avec le driver overlay et chiffrement.
-4. Gestion centralisée des ports et variables d'environnement via un fichier `.env`.
-5. Organisation claire du projet avec des dossiers dédiés et des commentaires dans les fichiers de configuration.
+1. Utilisation d'utilisateurs non-root pour rÃ©duire les risques de sÃ©curitÃ©.
+2. Mise en place de healthchecks pour dÃ©tecter rapidement les erreurs dans les services.
+3. SÃ©curisation des rÃ©seaux Docker avec le driver overlay et chiffrement.
+4. Gestion centralisÃ©e des ports et variables d'environnement via un fichier `.env`.
+5. Organisation claire du projet avec des dossiers dÃ©diÃ©s et des commentaires dans les fichiers de configuration.
 
 ---
 
-## Résultats
+## RÃ©sultats
 
 - Tous les services fonctionnent correctement et communiquent entre eux :
-  - Le frontend récupère les données du backend.
-  - Le backend interagit avec la base de données MariaDB.
+  - Le frontend rÃ©cupÃ¨re les donnÃ©es du backend.
+  - Le backend interagit avec la base de donnÃ©es MariaDB.
   - Les outils phpMyAdmin et Uptime Kuma permettent une gestion et une surveillance faciles.
 
-- Le projet est prêt pour une utilisation en développement ou en production avec des ajustements mineurs (comme l'activation de TLS).
+- Le projet est prÃªt pour une utilisation en dÃ©veloppement ou en production avec des ajustements mineurs (comme l'activation de TLS).
 
 ---
 
 ## Conclusion
 Ce projet a permis d'approfondir les connaissances en conteneurisation avec Docker, en particulier sur :
-- L'écriture de Dockerfiles optimisés.
-- La gestion des dépendances et des permissions.
+- L'Ã©criture de Dockerfiles optimisÃ©s.
+- La gestion des dÃ©pendances et des permissions.
 - L'orchestration de services complexes avec `docker-compose`.
 
-Les défis rencontrés ont permis de renforcer les compétences en résolution de problèmes liés à la mise en réseau et à la configuration de conteneurs. Ce projet constitue une base solide pour des développements futurs.
+Les dÃ©fis rencontrÃ©s ont permis de renforcer les compÃ©tences en rÃ©solution de problÃ¨mes liÃ©s Ã  la mise en rÃ©seau et Ã  la configuration de conteneurs. Ce projet constitue une base solide pour des dÃ©veloppements futurs.
 
 ---
 
-## À Faire
+## Ã€ Faire
 1. Ajouter un environnement de test avec des pipelines CI/CD.
-2. Implémenter HTTPS pour les services exposés.
-3. Tester le déploiement sur un cluster Docker Swarm ou Kubernetes.
+2. ImplÃ©menter HTTPS pour les services exposÃ©s.
+
+## Petit Tips
+1. Pour Uptime Kuma, Il faut remettre en place les IP (dans leur sonde) du Back et de mariaDB en reprenant la bon IP qui change Ã  chaque compose up. Pour cela, il faut donc se rendre dans le Portainer et regarder l'IP du container en question (Normalement en 10.X.X.X). Vous pouvez aussi le vÃ©rifier en regardant l'IP en faisant un docker network inspect du bon rÃ©seau.
