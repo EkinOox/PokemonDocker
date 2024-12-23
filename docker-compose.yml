@@ -73,9 +73,8 @@ services:
     container_name: phpmyadmin-docker
     environment:
       PMA_HOST: mariadb-docker
-      PMA_PORT: ${MARIADB_PORT}
+      PMA_PORT: 3306
       MYSQL_ROOT_PASSWORD: root_password
-    command: bash -c "echo 'ServerName phpmyadmin' > /etc/apache2/conf-available/phpmyadmin.conf && apache2ctl -D FOREGROUND"
     networks:
       - back-db
     healthcheck:
