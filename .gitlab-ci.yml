@@ -7,9 +7,6 @@ stages:
   - deploy
   
 sast:
-<<<<<<< HEAD
-  stage: test
-=======
   stage: test
   
 
