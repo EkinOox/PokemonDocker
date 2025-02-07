@@ -7,4 +7,41 @@ stages:
   - deploy
   
 sast:
+<<<<<<< HEAD
   stage: test
+=======
+  stage: test
+  
+
+  
+# variables:
+#   MY_VAR : "value"
+  
+# before_script:
+#   - echo "This is executed"
+  
+# job1-build:
+#   stage: build
+#   script:
+#     - echo "Building the app"
+#     - echo $MY_VAR
+#   tags:
+#     - docker build
+
+# job2-test:
+#   stage: test
+#   script:
+#     - echo "Testing the app"
+#   tags:
+#     - docker test
+
+# job3-deploy:
+#   stage: deploy
+#   script:
+#     - echo "Deploying the app"
+#   tags:
+#     - docker deploy
+#   only:
+#     - main
+
+>>>>>>> 523ef4b (add(cicd): SAST)
