@@ -40,5 +40,3 @@ sast:
 #     - docker deploy
 #   only:
 #     - main
-
->>>>>>> 523ef4b (add(cicd): SAST)
