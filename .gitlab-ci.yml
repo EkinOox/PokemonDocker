@@ -9,6 +9,18 @@ stages:
 sast:
   stage: test
   
+test-api:
+  stage: test
+  image: python:3.11
+  script:
+    - echo "Testing the API"
+    - cd backend
+    - pip install poetry
+    - poetry install
+    - poetry run pytest
+  
+    
+  
 
   
 # variables:
