@@ -8,5 +8,12 @@ export default defineConfig({
     watch: {
       usePolling: true,
     },
+    proxy: {
+      '/tyradex': {
+        target: 'https://tyradex.app',
+        changeOrigin: true,
+        rewrite: (path) => path.replace(/^\/tyradex/, ''),
+      },
+    },
   },
 });

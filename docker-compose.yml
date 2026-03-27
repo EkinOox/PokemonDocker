@@ -19,10 +19,10 @@ services:
     networks:
       - front-back
     healthcheck:
-      test: [ "CMD", "curl", "-f", "frontend-docker"]
+      test: [ "CMD", "curl", "-f", "http://localhost:5173"]
       interval: 30s
       retries: 3
-      start_period: 10s
+      start_period: 15s
       timeout: 10s
 
   backend-docker:
@@ -42,10 +42,10 @@ services:
       - back-db
       - front-back
     healthcheck:
-      test: [ "CMD", "curl", "-f", "backend-docker" ]
+      test: [ "CMD", "curl", "-f", "http://localhost:8000"]
       interval: 30s
       retries: 3
-      start_period: 10s
+      start_period: 15s
       timeout: 10s
 
   mariadb-docker:
@@ -80,10 +80,10 @@ services:
     networks:
       - back-db
     healthcheck:
-      test: [ "CMD", "curl", "-f", "phpmyadmin-docker" ]
+      test: [ "CMD", "curl", "-f", "http://localhost:80"]
       interval: 30s
       retries: 3
-      start_period: 10s
+      start_period: 15s
       timeout: 10s
 
   uptime-kuma-docker:
@@ -124,15 +124,9 @@ services:
 
 networks:
   back-db:
-    driver: overlay
-    driver_opts:
-      encrypted: "true"
-    attachable: true 
+    driver: bridge
   front-back:
-    driver: overlay
-    driver_opts:
-      encrypted: "true"
-    attachable: true
+    driver: bridge
 
 
 volumes:

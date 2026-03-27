@@ -1,7 +1,7 @@
 const container = document.getElementById('allPokemon');
 
 document.addEventListener('DOMContentLoaded', function () {
-    fetch(`https://tyradex.vercel.app/api/v1/pokemon`)
+    fetch(`/tyradex/api/v1/pokemon`)
         .then(response => response.json())
         .then(data => {
             // Vider le conteneur

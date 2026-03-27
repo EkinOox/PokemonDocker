@@ -23,7 +23,7 @@ const PokemonGen = () => {
   }, []);
   
   useEffect(() => {
-    fetch(`https://tyradex.vercel.app/api/v1/gen/${genId}`)
+    fetch(`/tyradex/api/v1/gen/${genId}`)
       .then(response => response.json())
       .then(data => setPokemons(data))
       .catch(error => console.error('Erreur lors de la récupération des Pokémon:', error));

@@ -22,7 +22,7 @@ const Pokedex = () => {
   }, []);
   
   useEffect(() => {
-    fetch("https://tyradex.vercel.app/api/v1/pokemon")
+    fetch("/tyradex/api/v1/pokemon")
       .then((response) => response.json())
       .then((data) => {
         setPokemons(data.slice(1));

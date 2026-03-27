@@ -3,7 +3,7 @@ const urlParams = new URLSearchParams(queryString);
 const profile = document.getElementById('profile');
 
 document.addEventListener('DOMContentLoaded', function () {
-    fetch(`https://tyradex.vercel.app/api/v1/pokemon/${urlParams.get('pokemonId')}`)
+    fetch(`/tyradex/api/v1/pokemon/${urlParams.get('pokemonId')}`)
         .then(response => response.json())
         .then(data => {
 
