@@ -25,7 +25,7 @@ k8s/
 ├── deploy.sh                 # Script de déploiement complet
 ├── namespace.yaml            # Namespace "pokemon"
 ├── secrets.yaml              # Secrets K8s (gitignore)
-├── ingress.yaml              # Ingress nginx (routing HTTP)
+├── ingress.yaml              # Ingress nginx (routing HTTP + rewrite-target)
 ├── mariadb/
 │   ├── configmap.yaml        # Script d'initialisation SQL
 │   ├── pvc.yaml              # PersistentVolumeClaim (1Gi)
@@ -35,9 +35,13 @@ k8s/
 │   ├── deployment.yaml       # Déploiement backend (2 replicas)
 │   ├── service.yaml          # Service ClusterIP port 8000
 │   └── migration-job.yaml    # Job Doctrine migrations (one-off)
-└── frontend/
-    ├── deployment.yaml       # Déploiement frontend (2 replicas)
-    └── service.yaml          # Service ClusterIP port 80
+├── frontend/
+│   ├── deployment.yaml       # Déploiement frontend (2 replicas)
+│   └── service.yaml          # Service ClusterIP port 80
+└── uptime-kuma/
+    ├── pvc.yaml              # PersistentVolumeClaim (1Gi) pour les données Kuma
+    ├── deployment.yaml       # Déploiement Uptime Kuma (1 replica)
+    └── service.yaml          # Service ClusterIP port 3001
 ```
 
 ---
@@ -147,7 +151,7 @@ Le script :
 1. Applique le namespace et les secrets
 2. Déploie MariaDB et attend qu'elle soit prête
 3. Exécute le job de migrations Doctrine (`Factor XII`)
-4. Déploie backend, frontend et l'ingress
+4. Déploie backend, frontend, Uptime Kuma et l'ingress
 
 ### Déploiement manuel étape par étape
 
@@ -176,7 +180,10 @@ kubectl apply -f k8s/backend/service.yaml
 REGISTRY=ekinoox envsubst < k8s/frontend/deployment.yaml | kubectl apply -f -
 kubectl apply -f k8s/frontend/service.yaml
 
-# 6. Ingress
+# 6. Uptime Kuma
+kubectl apply -f k8s/uptime-kuma/
+
+# 7. Ingress
 kubectl apply -f k8s/ingress.yaml
 ```
 
@@ -210,6 +217,7 @@ backend-xxxxx                1/1     Running     0
 backend-yyyyy                1/1     Running     0
 frontend-xxxxx               1/1     Running     0
 frontend-yyyyy               1/1     Running     0
+uptime-kuma-xxxxx            1/1     Running     0
 ```
 
 ---
@@ -285,10 +293,12 @@ frontend-yyyyy               1/1     Running     0
 **Cause :** Le dossier `backend/migrations/` est vide car le schéma est créé par `init.sql` (ConfigMap MariaDB), pas par Doctrine Migrations  
 **Solution :** Ajout du flag `--allow-no-migration` dans `migration-job.yaml` — le job se termine en `Completed` au lieu d'`Error`
 
-### Job migrations échoue — aucune migration enregistrée
-**Symptôme :** `[ERROR] The version "latest" couldn't be reached, there are no registered migrations.`  
-**Cause :** Le dossier `backend/migrations/` est vide car le schéma est créé par `init.sql` (ConfigMap MariaDB), pas par Doctrine Migrations  
-**Solution :** Ajout du flag `--allow-no-migration` dans `migration-job.yaml` — le job se termine en `Completed` au lieu d'`Error`
+### Uptime Kuma inaccessible via `/status` — CrashLoopBackOff
+**Symptôme :** Pod Uptime Kuma redémarre en boucle, page `/status` renvoie une erreur  
+**Cause 1 :** Variable `BASE_PATH` non supportée par l'image `louislam/uptime-kuma` — la readiness probe HTTP sur `/status` échouait  
+**Solution 1 :** Probe remplacée par `tcpSocket` sur le port 3001  
+**Cause 2 :** L'ingress transmettait `/status/...` au pod sans réécriture — Uptime Kuma ne sert que sur `/`  
+**Solution 2 :** Annotation `rewrite-target: /$2` + paths regex (`/status(/|$)(.*)`) dans `ingress.yaml` — l'ingress réécrit le chemin avant transmission au pod
 
 ---
 
@@ -298,4 +308,5 @@ frontend-yyyyy               1/1     Running     0
 |---------------|-----|
 | Production | http://pokemon.portfolio-kdiochon.fr |
 | API (prod) | http://pokemon.portfolio-kdiochon.fr/api/users |
+| Uptime Kuma | http://pokemon.portfolio-kdiochon.fr/status |
 | Dev local | http://localhost:5173 (frontend) + http://localhost:8000 (backend) |

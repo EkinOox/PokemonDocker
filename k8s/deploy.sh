@@ -26,6 +26,7 @@ envsubst < "$SCRIPT_DIR/backend/deployment.yaml"  | kubectl apply -f -
 kubectl apply -f "$SCRIPT_DIR/backend/service.yaml"
 envsubst < "$SCRIPT_DIR/frontend/deployment.yaml" | kubectl apply -f -
 kubectl apply -f "$SCRIPT_DIR/frontend/service.yaml"
+kubectl apply -f "$SCRIPT_DIR/uptime-kuma/"
 kubectl apply -f "$SCRIPT_DIR/ingress.yaml"
 
 echo "Déploiement terminé."
