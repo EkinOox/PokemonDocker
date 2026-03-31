@@ -35,7 +35,10 @@ services:
     ports:
       - "${BACKEND_PORT}:${BACKEND_PORT}"
     environment:
-      DATABASE_URL: "mysql://pokemon_user:pokemon_password@mariadb-docker:${MARIADB_PORT}/pokemon"
+      DATABASE_URL: "mysql://pokemon_user:pokemon_password@mariadb-docker:${MARIADB_PORT}/pokemon?serverVersion=10.11.2-MariaDB&charset=utf8mb4"
+      APP_ENV: "dev"
+      APP_SECRET: "dev_secret_not_for_production"
+      CORS_ALLOW_ORIGIN: '^https?://(localhost|127\.0\.0\.1)(:[0-9]+)?$'
     depends_on:
       - mariadb-docker
     networks:

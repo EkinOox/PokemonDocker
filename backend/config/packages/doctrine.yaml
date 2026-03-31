@@ -1,12 +1,6 @@
 doctrine:
     dbal:
-        driver: 'pdo_mysql'
-        host: 'mariadb-docker'
-        port: '3306'
-        dbname: 'pokemon'
-        user: 'pokemon_user'
-        password: 'pokemon_password'
-        charset: utf8mb4
+        url: '%env(DATABASE_URL)%'
         profiling_collect_backtrace: '%kernel.debug%'
         use_savepoints: true
     orm:

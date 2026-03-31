@@ -3,7 +3,6 @@ namespace App\Controller;
 
 use App\Entity\User;
 use App\Repository\UserRepository;
-use Symfony\Component\HttpFoundation\Session\SessionInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
@@ -73,8 +72,7 @@ class UserController extends AbstractController
     public function login(
         Request $request,
         UserRepository $userRepository,
-        UserPasswordHasherInterface $passwordHasher,
-        SessionInterface $session
+        UserPasswordHasherInterface $passwordHasher
     ): JsonResponse {
         $data = json_decode($request->getContent(), true);
         
@@ -87,21 +85,21 @@ class UserController extends AbstractController
             return new JsonResponse(['message' => 'Identifiants invalides.'], JsonResponse::HTTP_UNAUTHORIZED);
         }
 
-        // Sauvegarder les informations utilisateur dans la session
-        $session->set('user', [
+        $userData = [
             'id' => $user->getId(),
             'name' => $user->getName(),
             'email' => $user->getEmail(),
-        ]);
+        ];
 
-        return new JsonResponse(['message' => 'Connexion réussie.', 'user' => $session->get('user')], JsonResponse::HTTP_OK);
+        // Stateless : l'état est géré côté client (sessionStorage)
+        return new JsonResponse(['message' => 'Connexion réussie.', 'user' => $userData], JsonResponse::HTTP_OK);
     }
 
     #[Route('/api/logout', name: 'api_logout', methods: ['POST'])]
-    public function logout(SessionInterface $session): JsonResponse
+    public function logout(): JsonResponse
     {
-        $session->remove('user');
-
+        // Stateless : le client supprime son sessionStorage
         return new JsonResponse(['message' => 'Déconnexion réussie.'], JsonResponse::HTTP_OK);
     }
 }
+

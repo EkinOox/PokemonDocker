@@ -5,6 +5,8 @@ metadata:
   namespace: pokemon
 spec:
   replicas: 1
+  strategy:
+    type: Recreate
   selector:
     matchLabels:
       app: mariadb
@@ -45,14 +47,14 @@ spec:
             - name: mariadb-init
               mountPath: /docker-entrypoint-initdb.d
           readinessProbe:
-            exec:
-              command: ["mysqladmin", "ping", "-h", "localhost", "--silent"]
-            initialDelaySeconds: 15
+            tcpSocket:
+              port: 3306
+            initialDelaySeconds: 20
             periodSeconds: 10
           livenessProbe:
-            exec:
-              command: ["mysqladmin", "ping", "-h", "localhost", "--silent"]
-            initialDelaySeconds: 30
+            tcpSocket:
+              port: 3306
+            initialDelaySeconds: 40
             periodSeconds: 20
       volumes:
         - name: mariadb-data
