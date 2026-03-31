@@ -1,0 +1,57 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: backend
+  namespace: pokemon
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: backend
+  template:
+    metadata:
+      labels:
+        app: backend
+    spec:
+      initContainers:
+        - name: wait-for-db
+          image: busybox
+          command: ["sh", "-c", "until nc -z mariadb 3306; do echo 'En attente de MariaDB...'; sleep 3; done"]
+      containers:
+        - name: backend
+          image: ${REGISTRY}/pokemon-backend:latest
+          imagePullPolicy: Always
+          ports:
+            - containerPort: 8000
+          env:
+            - name: APP_ENV
+              value: "prod"
+            - name: APP_SECRET
+              valueFrom:
+                secretKeyRef:
+                  name: backend-secret
+                  key: app-secret
+            - name: DATABASE_URL
+              value: "mysql://$(MYSQL_USER):$(MYSQL_PASSWORD)@mariadb:3306/pokemon"
+            - name: MYSQL_USER
+              valueFrom:
+                secretKeyRef:
+                  name: mariadb-secret
+                  key: mysql-user
+            - name: MYSQL_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: mariadb-secret
+                  key: mysql-password
+          readinessProbe:
+            httpGet:
+              path: /api/users
+              port: 8000
+            initialDelaySeconds: 15
+            periodSeconds: 10
+          livenessProbe:
+            httpGet:
+              path: /api/users
+              port: 8000
+            initialDelaySeconds: 30
+            periodSeconds: 20

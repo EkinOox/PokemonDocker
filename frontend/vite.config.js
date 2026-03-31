@@ -9,6 +9,10 @@ export default defineConfig({
       usePolling: true,
     },
     proxy: {
+      '/api': {
+        target: 'http://localhost:8000',
+        changeOrigin: true,
+      },
       '/tyradex': {
         target: 'https://tyradex.app',
         changeOrigin: true,

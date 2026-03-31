@@ -1,0 +1,35 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: pokemon-ingress
+  namespace: pokemon
+  annotations:
+    nginx.ingress.kubernetes.io/proxy-body-size: "10m"
+    nginx.ingress.kubernetes.io/proxy-read-timeout: "60"
+spec:
+  ingressClassName: nginx
+  rules:
+    - host: pokemon.portfolio-kdiochon.fr
+      http:
+        paths:
+          # Les routes /api/* sont routées vers le backend Symfony
+          - path: /api
+            pathType: Prefix
+            backend:
+              service:
+                name: backend
+                port:
+                  number: 8000
+          # Tout le reste va au frontend React
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: frontend
+                port:
+                  number: 80
+  # Décommentez et configurez si vous avez un certificat TLS (Let's Encrypt via cert-manager)
+  # tls:
+  #   - hosts:
+  #       - pokemon.VOTRE_DOMAINE.com
+  #     secretName: pokemon-tls

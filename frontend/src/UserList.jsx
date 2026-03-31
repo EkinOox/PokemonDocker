@@ -8,7 +8,7 @@ const UserList = () => {
 
     // Fonction pour récupérer les utilisateurs depuis l'API Symfony
     useEffect(() => {
-        axios.get('http://localhost:8000/api/users')
+        axios.get('/api/users')
             .then((response) => {
                 setUsers(response.data); // Stocker les données dans l'état
                 setLoading(false); // Désactiver le chargement

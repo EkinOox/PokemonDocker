@@ -1,25 +1,27 @@
 # PHP/Symfony
-/vendor/
-/var/
-/.env
-/.env.local
-/.env.*.local
-/public/bundles/
-/public/build/
-/node_modules/
-/.idea/
-/.vscode/
-/.phpunit.result.cache
+backend/vendor/
+backend/var/
+backend/.env
+backend/.env.local
+backend/.env.*.local
+backend/public/bundles/
+backend/public/build/
+backend/.phpunit.result.cache
 
 # Frontend (Vite/React)
-/frontend/node_modules/
-/frontend/dist/
-/frontend/.env
-/frontend/.env.*
+frontend/node_modules/
+frontend/dist/
+frontend/.env
+frontend/.env.*
+frontend/src/output.css
+
+# Kubernetes - secrets (ne jamais versionner les valeurs réelles)
+k8s/secrets.yaml
+k8s/.env
 
 # Docker
-**/docker-compose.override.yml
-**/.docker/*
+docker-compose.override.yml
+.docker/
 
 # OS
 .DS_Store
@@ -36,5 +38,13 @@ yarn-error.log*
 /.parcel-cache
 
 # IDE
+.idea/
+.vscode/
 *.swp
 *~
+
+# Python (tests)
+backend/test/__pycache__/
+**/__pycache__/
+*.pyc
+*.pyo

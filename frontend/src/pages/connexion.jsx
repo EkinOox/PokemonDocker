@@ -16,7 +16,7 @@ function ConnexionForm() {
     e.preventDefault();
 
     try {
-      const response = await axios.post('http://localhost:8000/api/login', {
+      const response = await axios.post('/api/login', {
         email,
         password,
       });
@@ -41,7 +41,7 @@ function ConnexionForm() {
  
   const handleLogout = async () => {
     try {
-      await axios.post('http://localhost:8000/api/logout');
+      await axios.post('/api/logout');
       sessionStorage.removeItem('user');
       setUser(null);
     } catch (error) {
