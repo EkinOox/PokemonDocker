@@ -1,0 +1,189 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: pokemon-dashboard
+  namespace: monitoring
+  labels:
+    grafana_dashboard: "1"
+data:
+  pokemon-dashboard.json: |
+    {
+      "title": "Pokemon App",
+      "uid": "pokemon-app",
+      "tags": ["pokemon", "kubernetes"],
+      "timezone": "browser",
+      "schemaVersion": 36,
+      "refresh": "30s",
+      "time": { "from": "now-1h", "to": "now" },
+      "panels": [
+        {
+          "id": 1,
+          "title": "Pods en cours d'exécution",
+          "type": "stat",
+          "gridPos": { "h": 4, "w": 6, "x": 0, "y": 0 },
+          "options": { "colorMode": "background", "graphMode": "none" },
+          "targets": [{
+            "expr": "count(kube_pod_status_phase{namespace=\"pokemon\", phase=\"Running\"})",
+            "legendFormat": "Pods Running",
+            "datasource": { "type": "prometheus", "uid": "prometheus" }
+          }]
+        },
+        {
+          "id": 2,
+          "title": "Redémarrages de pods",
+          "type": "stat",
+          "gridPos": { "h": 4, "w": 6, "x": 6, "y": 0 },
+          "options": { "colorMode": "background", "graphMode": "none",
+            "thresholds": { "steps": [
+              { "color": "green", "value": null },
+              { "color": "yellow", "value": 1 },
+              { "color": "red", "value": 5 }
+            ]}
+          },
+          "targets": [{
+            "expr": "sum(kube_pod_container_status_restarts_total{namespace=\"pokemon\"})",
+            "legendFormat": "Restarts",
+            "datasource": { "type": "prometheus", "uid": "prometheus" }
+          }]
+        },
+        {
+          "id": 3,
+          "title": "Requêtes HTTP/s (nginx ingress)",
+          "type": "stat",
+          "gridPos": { "h": 4, "w": 6, "x": 12, "y": 0 },
+          "options": { "colorMode": "background", "graphMode": "area" },
+          "targets": [{
+            "expr": "round(sum(rate(nginx_ingress_controller_requests{ingress=~\"backend-ingress|frontend-ingress\"}[2m])), 0.01)",
+            "legendFormat": "req/s",
+            "datasource": { "type": "prometheus", "uid": "prometheus" }
+          }]
+        },
+        {
+          "id": 4,
+          "title": "Taux d'erreurs HTTP 5xx",
+          "type": "stat",
+          "gridPos": { "h": 4, "w": 6, "x": 18, "y": 0 },
+          "options": { "colorMode": "background", "graphMode": "none",
+            "thresholds": { "steps": [
+              { "color": "green", "value": null },
+              { "color": "red", "value": 0.01 }
+            ]}
+          },
+          "targets": [{
+            "expr": "sum(rate(nginx_ingress_controller_requests{status=~\"5..\"}[2m])) / sum(rate(nginx_ingress_controller_requests[2m]))",
+            "legendFormat": "5xx rate",
+            "datasource": { "type": "prometheus", "uid": "prometheus" }
+          }]
+        },
+        {
+          "id": 9,
+          "title": "État des services par pod",
+          "type": "table",
+          "gridPos": { "h": 8, "w": 24, "x": 0, "y": 4 },
+          "options": {
+            "sortBy": [{ "displayName": "Pod", "desc": false }],
+            "footer": { "show": false }
+          },
+          "fieldConfig": {
+            "defaults": {},
+            "overrides": [
+              {
+                "matcher": { "id": "byName", "options": "État" },
+                "properties": [
+                  { "id": "custom.width", "value": 140 },
+                  {
+                    "id": "mappings",
+                    "value": [
+                      { "type": "value", "options": { "1": { "text": "✔ Running", "color": "green", "index": 0 } } },
+                      { "type": "value", "options": { "0": { "text": "✘ Down", "color": "red", "index": 1 } } }
+                    ]
+                  },
+                  { "id": "custom.displayMode", "value": "color-background" }
+                ]
+              },
+              {
+                "matcher": { "id": "byName", "options": "Redémarrages" },
+                "properties": [
+                  { "id": "custom.width", "value": 130 },
+                  { "id": "thresholds", "value": { "mode": "absolute", "steps": [
+                    { "color": "green", "value": null },
+                    { "color": "yellow", "value": 1 },
+                    { "color": "red", "value": 5 }
+                  ]}},
+                  { "id": "custom.displayMode", "value": "color-background" }
+                ]
+              }
+            ]
+          },
+          "transformations": [
+            { "id": "labelsToFields", "options": { "mode": "columns" } },
+            { "id": "merge", "options": {} },
+            {
+              "id": "organize",
+              "options": {
+                "excludeByName": {
+                  "Time": true,
+                  "condition": true,
+                  "namespace": true,
+                  "__name__": true,
+                  "container": true,
+                  "uid": true
+                },
+                "renameByName": {
+                  "pod": "Pod",
+                  "Value #A": "État",
+                  "Value #B": "Redémarrages"
+                },
+                "indexByName": { "Pod": 0, "État": 1, "Redémarrages": 2 }
+              }
+            }
+          ],
+          "targets": [
+            {
+              "refId": "A",
+              "expr": "kube_pod_status_ready{namespace=\"pokemon\", condition=\"true\"}",
+              "legendFormat": "",
+              "instant": true,
+              "datasource": { "type": "prometheus", "uid": "prometheus" }
+            },
+            {
+              "refId": "B",
+              "expr": "sum by (pod) (kube_pod_container_status_restarts_total{namespace=\"pokemon\"})",
+              "legendFormat": "",
+              "instant": true,
+              "datasource": { "type": "prometheus", "uid": "prometheus" }
+            }
+          ]
+        },
+        {
+          "id": 5,
+          "title": "CPU par pod (namespace pokemon)",
+          "type": "timeseries",
+          "gridPos": { "h": 8, "w": 12, "x": 0, "y": 12 },
+          "options": { "tooltip": { "mode": "multi" } },
+          "fieldConfig": {
+            "defaults": { "unit": "percentunit", "custom": { "lineWidth": 2 } }
+          },
+          "targets": [{
+            "expr": "sum by (pod) (rate(container_cpu_usage_seconds_total{namespace=\"pokemon\", container!=\"\", container!=\"POD\"}[2m]))",
+            "legendFormat": "{{pod}}",
+            "datasource": { "type": "prometheus", "uid": "prometheus" }
+          }]
+        },
+        {
+          "id": 6,
+          "title": "Mémoire par pod (namespace pokemon)",
+          "type": "timeseries",
+          "gridPos": { "h": 8, "w": 12, "x": 12, "y": 12 },
+          "options": { "tooltip": { "mode": "multi" } },
+          "fieldConfig": {
+            "defaults": { "unit": "bytes", "custom": { "lineWidth": 2 } }
+          },
+          "targets": [{
+            "expr": "sum by (pod) (container_memory_working_set_bytes{namespace=\"pokemon\", container!=\"\", container!=\"POD\"})",
+            "legendFormat": "{{pod}}",
+            "datasource": { "type": "prometheus", "uid": "prometheus" }
+          }]
+        }
+      ]
+    }

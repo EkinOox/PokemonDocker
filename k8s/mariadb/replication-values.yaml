@@ -1,0 +1,23 @@
+# MariaDB replication stateful setup via Helm (Bitnami)
+architecture: replication
+replication:
+  enabled: true
+  user: replication_user
+  password: replication_password
+  walg: false
+auth:
+  rootPassword: root_password
+  database: pokemon
+  username: pokemon_user
+  password: pokemon_password
+primary:
+  persistence:
+    enabled: true
+    size: 1Gi
+secondary:
+  replicaCount: 1
+  persistence:
+    enabled: true
+    size: 1Gi
+service:
+  type: ClusterIP

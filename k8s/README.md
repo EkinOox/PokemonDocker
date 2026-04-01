@@ -308,5 +308,46 @@ uptime-kuma-xxxxx            1/1     Running     0
 |---------------|-----|
 | Production | http://pokemon.portfolio-kdiochon.fr |
 | API (prod) | http://pokemon.portfolio-kdiochon.fr/api/users |
-| Uptime Kuma | http://pokemon.portfolio-kdiochon.fr/status |
+| Uptime Kuma | http://status.pokemon.portfolio-kdiochon.fr |
 | Dev local | http://localhost:5173 (frontend) + http://localhost:8000 (backend) |
+
+---
+
+## Extensions manquantes réalisées
+
+### 1. API JWT
+- `lexik/jwt-authentication-bundle` ajouté et configuré.
+- `security.yaml` mis à jour pour protéger `/api` par token JWT.
+- `UserController::login` renvoie désormais un token JWT.
+- `register` reste public, `GET /api/users` nécessite JWT.
+
+### 2. MariaDB Répliquée (Helm Bitnami)
+Fichier ajouté : `k8s/mariadb/replication-values.yaml`
+
+Commande proposée :
+```
+helm repo add bitnami https://charts.bitnami.com/bitnami
+helm repo update
+helm install mariadb-repl bitnami/mariadb --namespace pokemon --create-namespace -f k8s/mariadb/replication-values.yaml
+```
+
+### 3. Gatekeeper OPA
+Commande proposée :
+```
+kubectl apply -f https://raw.githubusercontent.com/open-policy-agent/gatekeeper/release-3.11/deploy/gatekeeper.yaml
+```
+
+Exemple de ConstraintTemplate & Constraint à ajouter dans `k8s/opa/` (voir docs du projet).
+
+### 4. Headlamp
+Commande proposée :
+```
+helm repo add headlamp https://headlamp-k8s.github.io/headlamp/
+helm repo update
+helm install headlamp headlamp/headlamp -n pokemon --create-namespace
+```
+
+### 5. Supervision avancée (optionnel)
+- Prometheus/Grafana (Helm chart `kube-prometheus-stack`)
+- Graylog (stateful plus complexe)
+

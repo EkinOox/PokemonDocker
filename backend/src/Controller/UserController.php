@@ -3,6 +3,7 @@ namespace App\Controller;
 
 use App\Entity\User;
 use App\Repository\UserRepository;
+use Lexik\Bundle\JWTAuthenticationBundle\Services\JWTTokenManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
@@ -72,10 +73,11 @@ class UserController extends AbstractController
     public function login(
         Request $request,
         UserRepository $userRepository,
-        UserPasswordHasherInterface $passwordHasher
+        UserPasswordHasherInterface $passwordHasher,
+        JWTTokenManagerInterface $jwtManager
     ): JsonResponse {
         $data = json_decode($request->getContent(), true);
-        
+
         if (!$data || !isset($data['email'], $data['password'])) {
             return new JsonResponse(['message' => 'Email et mot de passe requis.'], JsonResponse::HTTP_BAD_REQUEST);
         }
@@ -85,14 +87,17 @@ class UserController extends AbstractController
             return new JsonResponse(['message' => 'Identifiants invalides.'], JsonResponse::HTTP_UNAUTHORIZED);
         }
 
-        $userData = [
-            'id' => $user->getId(),
-            'name' => $user->getName(),
-            'email' => $user->getEmail(),
-        ];
+        $token = $jwtManager->create($user);
 
-        // Stateless : l'état est géré côté client (sessionStorage)
-        return new JsonResponse(['message' => 'Connexion réussie.', 'user' => $userData], JsonResponse::HTTP_OK);
+        return new JsonResponse([
+            'message' => 'Connexion réussie.',
+            'token' => $token,
+            'user' => [
+                'id' => $user->getId(),
+                'name' => $user->getName(),
+                'email' => $user->getEmail(),
+            ],
+        ], JsonResponse::HTTP_OK);
     }
 
     #[Route('/api/logout', name: 'api_logout', methods: ['POST'])]

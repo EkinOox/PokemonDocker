@@ -23,9 +23,6 @@ spec:
           env:
             - name: UPTIME_KUMA_HOST
               value: "0.0.0.0"
-            # Kuma sert nativement sous /status — les redirects internes (/status/dashboard) fonctionnent sans rewrite
-            - name: BASE_PATH
-              value: "/status"
           volumeMounts:
             - name: uptime-kuma-data
               mountPath: /app/data

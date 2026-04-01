@@ -21,8 +21,11 @@ function ConnexionForm() {
         password,
       });
 
+      const token = response.data.token;
       const userData = response.data.user;
       sessionStorage.setItem('user', JSON.stringify(userData));
+      sessionStorage.setItem('token', token);
+      axios.defaults.headers.common['Authorization'] = `Bearer ${token}`;
       setUser(userData);
       setErrorMessage('');
 

@@ -20,14 +20,6 @@ spec:
                 name: backend
                 port:
                   number: 8000
-          # Uptime Kuma — BASE_PATH=/status, Kuma gère lui-même le sous-chemin
-          - path: /status
-            pathType: Prefix
-            backend:
-              service:
-                name: uptime-kuma
-                port:
-                  number: 3001
           # Tout le reste va au frontend React
           - path: /
             pathType: Prefix
