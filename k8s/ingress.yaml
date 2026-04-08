@@ -6,6 +6,7 @@ metadata:
   annotations:
     nginx.ingress.kubernetes.io/proxy-body-size: "10m"
     nginx.ingress.kubernetes.io/proxy-read-timeout: "60"
+    cert-manager.io/cluster-issuer: "letsencrypt-prod"
 spec:
   ingressClassName: nginx
   rules:
@@ -20,6 +21,14 @@ spec:
                 name: backend
                 port:
                   number: 8000
+          # Headlamp
+          - path: /headlamp
+            pathType: Prefix
+            backend:
+              service:
+                name: headlamp
+                port:
+                  number: 80
           # Tout le reste va au frontend React
           - path: /
             pathType: Prefix
@@ -28,15 +37,7 @@ spec:
                 name: frontend
                 port:
                   number: 80
-          - path: /headlamp
-            pathType: Prefix
-            backend:
-              service:
-                name: headlamp
-                port:
-                  number: 80
-  # Décommentez et configurez si vous avez un certificat TLS (Let's Encrypt via cert-manager)
-  # tls:
-  #   - hosts:
-  #       - pokemon.VOTRE_DOMAINE.com
-  #     secretName: pokemon-tls
+  tls:
+    - hosts:
+        - pokemon.portfolio-kdiochon.fr
+      secretName: pokemon-tls
