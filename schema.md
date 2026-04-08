@@ -1,12 +1,12 @@
 # Kubernetes architecture détaillée (PokemonDocker)
 
-## 🎯 Objectif
+## Objectif
 Ce diagramme Mermaid décrit toute l’infrastructure Kubernetes du projet : cluster, namespace, pods, services, ingress, rôles et principaux flux réseau.
 Le but est qu’un lecteur qui découvre le projet comprenne le système sans autre documentation.
 
 ---
 
-## 🧩 Légende
+## Légende
 - 🟦 Control Plane (API Server / etcd / Scheduler / Controller Manager)
 - 🟩 Accès externe (Ingress, navigateur)
 - 🟨 Applications (frontend, backend, DB)
@@ -15,94 +15,61 @@ Le but est qu’un lecteur qui découvre le projet comprenne le système sans au
 
 ---
 
-## 🌐 Diagramme Mermaid complet
+## Diagramme Mermaid simplifié
 
 ```mermaid
 flowchart TB
-  classDef controlPlane fill:#cfe2ff,stroke:#2f6fdb,stroke-width:2px,color:#0d3c61;
-  classDef external fill:#d1e7dd,stroke:#1f7d44,stroke-width:2px,color:#0f5132;
-  classDef app fill:#fff3cd,stroke:#ffcc00,stroke-width:2px,color:#664d03;
-  classDef admin fill:#e2e3e5,stroke:#6c757d,stroke-width:2px,color:#343a40;
-  classDef rbac fill:#fde2e2,stroke:#dc3545,stroke-width:2px,color:#842029;
+    subgraph "Namespace: pokemon"
+        User[ Utilisateur] --> Ingress[ Ingress<br/>nginx/traefik]
 
-  subgraph ControlPlane[Control plane]:::controlPlane
-    api["API Server\nkube-apiserver"]:::controlPlane
-    etcd["etcd\nstore état cluster"]:::controlPlane
-    scheduler["Scheduler\nplanification pods"]:::controlPlane
-    controller["Controller Manager\nreconcilation"]:::controlPlane
-  end
+        Ingress --> Frontend[ Frontend<br/>React/Vite]
+        Ingress --> Backend[ Backend<br/>Symfony API]
+        Ingress --> Headlamp[ Headlamp<br/>UI Admin]
 
-  api --> etcd
-  api --> scheduler
-  api --> controller
+        Frontend --> Backend
+        Backend --> DB[( MariaDB<br/>Base de données)]
 
-  subgraph NamespacePokemon[Namespace: pokemon]
-    direction LR
-
-    user["Utilisateur\n(navigateur)"]:::external
-    ingress["Ingress\n(nginx/traefik)\npokemon-ingress"]:::external
-
-    subgraph Services[Services (ClusterIP)]
-      direction TB
-      frontendSvc["Service\nfrontend"]:::app
-      backendSvc["Service\nbackend"]:::app
-      mariadbSvc["Service\nmariadb"]:::app
-      headlampSvc["Service\nheadlamp"]:::admin
+        Headlamp --> API[ API Server]
     end
 
-    subgraph Pods[Pods déployés]
-      direction TB
-      frontendPod["Pod frontend\nimage: pokemon-frontend:latest\nvite react"]:::app
-      backendPod["Pod backend\nimage: pokemon-backend:latest\nSymfony API"]:::app
-      mariadbPod["Pod mariadb\nimage: mariadb:10.9\nPVC: data-mariadb"]:::app
-      headlampPod["Pod headlamp\nimage: ghcr.io/loft-sh/headlamp:v0.13.0\nSA: headlamp\nRole: cluster-admin"]:::admin
+    subgraph "Control Plane"
+        API --> etcd[( etcd<br/>Stockage état)]
+        API --> Scheduler[ Scheduler<br/>Planification pods]
+        API --> Controller[ Controller Manager<br/>Réconciliation]
     end
 
-    user --> ingress
-    ingress --> frontendSvc
-    ingress --> backendSvc
-    ingress --> headlampSvc
+    Scheduler -.-> Frontend
+    Scheduler -.-> Backend
+    Scheduler -.-> DB
+    Scheduler -.-> Headlamp
 
-    frontendSvc --> frontendPod
-    backendSvc --> backendPod
-    mariadbSvc --> mariadbPod
-    headlampSvc --> headlampPod
+    classDef app fill:#e3f2fd,stroke:#1976d2,stroke-width:2px;
+    classDef db fill:#f3e5f5,stroke:#7b1fa2,stroke-width:2px;
+    classDef control fill:#e8f5e8,stroke:#388e3c,stroke-width:2px;
+    classDef external fill:#fff3e0,stroke:#f57c00,stroke-width:2px;
 
-    frontendPod --> backendSvc
-    backendPod --> mariadbSvc
-    headlampPod --> api
-  end
-
-  subgraph IAM[ IAM / RBAC ]
-    sa["ServiceAccount\nheadlamp"]:::rbac
-    crb["ClusterRoleBinding\nheadlamp-cluster-admin"]:::rbac
-  end
-
-  sa --> crb
-  crb --> headlampPod
-
-  api -.-> kubeconfig["Cluster auth\nconfig e.g. KUBECONFIG"]
-  etcd -.-> kubeconfig
-
-  scheduler --> frontendPod
-  scheduler --> backendPod
-  scheduler --> mariadbPod
-  scheduler --> headlampPod
+    class User,Ingress external;
+    class Frontend,Backend,Headlamp app;
+    class DB db;
+    class API,Scheduler,Controller control;
 ```
 
 ---
 
-## 📘 Déroulé et explications
-- `Ingress` reçoit le trafic externe et le redirige vers `frontend`, `backend` ou `headlamp`.
-- `frontend` est l’UI React déployée via `frontend` service/pod.
-- `backend` est l’API Symfony exposée via `backend` service/pod.
-- `mariadb` est la base de données StatefulSet (PVC) accessible depuis `backend`.
-- `headlamp` est l’UI d’observation et de gestion du cluster avec autorisations `cluster-admin`.
-- `Control plane` orchestre l’ensemble et stocke l’état dans `etcd`.
+## Déroulé et explications
+- **Utilisateur** : Accès via navigateur web
+- **Ingress** : Point d'entrée du trafic externe, redirige vers les applications
+- **Frontend** : Interface utilisateur React/Vite
+- **Backend** : API Symfony qui traite les requêtes
+- **MariaDB** : Base de données pour stocker les données
+- **Headlamp** : Interface d'administration Kubernetes
+- **Control Plane** : Cœur de Kubernetes (API Server, etcd, Scheduler, Controller Manager)
+
+Les flèches montrent les connexions réseau et les dépendances entre composants.
 
 ---
 
-## 🧹 Commandes de vérification
+## Commandes de vérification
 - `kubectl get pods -n pokemon -o wide`
 - `kubectl get svc -n pokemon`
 - `kubectl describe ingress -n pokemon`
