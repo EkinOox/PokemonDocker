@@ -28,6 +28,13 @@ spec:
                 name: frontend
                 port:
                   number: 80
+          - path: /headlamp
+            pathType: Prefix
+            backend:
+              service:
+                name: headlamp
+                port:
+                  number: 80
   # Décommentez et configurez si vous avez un certificat TLS (Let's Encrypt via cert-manager)
   # tls:
   #   - hosts:

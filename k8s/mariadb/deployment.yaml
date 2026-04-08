@@ -1,12 +1,11 @@
 apiVersion: apps/v1
-kind: Deployment
+kind: StatefulSet
 metadata:
   name: mariadb
   namespace: pokemon
 spec:
+  serviceName: mariadb-headless
   replicas: 1
-  strategy:
-    type: Recreate
   selector:
     matchLabels:
       app: mariadb
@@ -15,9 +14,19 @@ spec:
       labels:
         app: mariadb
     spec:
+      automountServiceAccountToken: false
       containers:
         - name: mariadb
           image: mariadb:11
+          resources:
+            requests:
+              cpu: "250m"
+              memory: "512Mi"
+              ephemeral-storage: "1Gi"
+            limits:
+              cpu: "500m"
+              memory: "1Gi"
+              ephemeral-storage: "2Gi"
           ports:
             - containerPort: 3306
           env:
@@ -57,9 +66,14 @@ spec:
             initialDelaySeconds: 40
             periodSeconds: 20
       volumes:
-        - name: mariadb-data
-          persistentVolumeClaim:
-            claimName: mariadb-pvc
         - name: mariadb-init
           configMap:
             name: mariadb-init
+  volumeClaimTemplates:
+    - metadata:
+        name: mariadb-data
+      spec:
+        accessModes: ["ReadWriteOnce"]
+        resources:
+          requests:
+            storage: 2Gi

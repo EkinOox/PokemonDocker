@@ -124,3 +124,10 @@ Les défis rencontrés ont permis de renforcer les compétences en résolution d
 1. Pour Uptime Kuma, Il faut remettre en place les IP (dans leur sonde) du Back et de mariaDB en reprenant la bon IP qui change à chaque compose up. Pour cela, il faut donc se rendre dans le Portainer et regarder l'IP du container en question (Normalement en 10.X.X.X). Vous pouvez aussi le vérifier en regardant l'IP en faisant un docker network inspect du bon réseau.
 
 2. Mon Projet docker est déjà dans un swarm (celui de Docker Desktop).
+
+---
+
+## Guide de tests Kubernetes
+
+Pour les tests d’intégration, de haute disponibilité et de basculement, consulte le fichier `k8s/README.md` qui contient la procédure complète avec les commandes et les résultats attendus.
+

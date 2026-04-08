@@ -205,6 +205,9 @@ kubectl logs -n pokemon -l job-name=doctrine-migrations --tail=30
 
 # Ingress
 kubectl get ingress -n pokemon
+
+# Headlamp
+kubectl get deploy,svc -n pokemon -l app=headlamp
 ```
 
 Résultat attendu :
@@ -212,12 +215,69 @@ Résultat attendu :
 ```
 NAME                         READY   STATUS      RESTARTS
 doctrine-migrations-xxxxx    0/1     Completed   0
-mariadb-xxxxx                1/1     Running     0
+mariadb-0                    1/1     Running     0
+mariadb-1                    1/1     Running     0
+mariadb-2                    1/1     Running     0
 backend-xxxxx                1/1     Running     0
 backend-yyyyy                1/1     Running     0
 frontend-xxxxx               1/1     Running     0
 frontend-yyyyy               1/1     Running     0
 uptime-kuma-xxxxx            1/1     Running     0
+headlamp-xxxxx               1/1     Running     0
+```
+
+## Tests d'intégration et de haute disponibilité
+
+1. Appliquer le stack complet :
+   - `kubectl apply -f k8s/namespace.yaml`
+   - `kubectl apply -f k8s/secrets.yaml`
+   - `kubectl apply -f k8s/mariadb/`
+   - `kubectl apply -f k8s/backend/`
+   - `kubectl apply -f k8s/frontend/`
+   - `kubectl apply -f k8s/uptime-kuma/`
+   - `kubectl apply -f k8s/headlamp/headlamp.yaml`
+   - `kubectl apply -f k8s/ingress.yaml`
+
+2. Vérifier que MariaDB tourne sous StatefulSet et que les 3 replicas sont prêts :
+   - `kubectl get statefulset mariadb -n pokemon`
+   - `kubectl get pods -n pokemon -l app=mariadb`
+
+3. Vérifier la persistance :
+   - `kubectl exec -n pokemon mariadb-0 -- mysql -u$DB_USER -p$DB_PASS -e "SHOW DATABASES;"`
+
+4. Vérifier la redirection via Ingress :
+   - `curl -I http://pokemon.portfolio-kdiochon.fr/api/...`
+   - `curl -I http://pokemon.portfolio-kdiochon.fr/`
+   - `curl -I http://pokemon.portfolio-kdiochon.fr/headlamp`
+
+5. Test de bascule (failover) de pods :
+   - `kubectl delete pod -n pokemon backend-xxxxx` et vérifier remplacement automatique.
+   - `kubectl delete pod -n pokemon frontend-xxxxx` et vérifier remplacement automatique.
+   - `kubectl delete pod -n pokemon mariadb-0` et vérifier que le StatefulSet recrée la pod et restaure depuis PVC.
+
+6. Test de montée en charge pour HA :
+   - `kubectl scale deployment/backend --replicas=4 -n pokemon`
+   - `kubectl scale deployment/frontend --replicas=4 -n pokemon`
+   - `kubectl get pods -n pokemon` pour confirmer les 4+ instances en état `Running`.
+
+7. Vérifier Headlamp :
+   - Accéder à `http://pokemon.portfolio-kdiochon.fr/headlamp` (ou :
+     `kubectl port-forward svc/headlamp 8080:80 -n pokemon` puis `http://localhost:8080`).
+
+## Attentes du test
+
+- 100% des services déployés sont `Running`.
+- L’Ingress route correctement `/api`, `/`, `/headlamp`.
+- Le StatefulSet MariaDB a des volumes persistants par instance et gère le restart.
+- Le cluster recrée automatiquement les pods supprimés (failover K8s).
+- Le backend et le frontend restent accessibles pendant la suppression d’un pod.
+- Les migrations Doctrine s’exécutent et le schéma existant est accessible.
+
+## Notes de production
+
+- Pour une vraie HA MariaDB avec réplication écrite, préférer un opérateur MariaDB (ou Galera / Bitnami helm chart) et ne pas exposer indépendamment des instances répliquées.
+- `headlamp` est déployé en mode cluster-admin pour la démonstration; en production, réduire le rôle au minimum requis.
+
 ```
 
 ---
