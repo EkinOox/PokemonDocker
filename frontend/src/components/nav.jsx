@@ -1,9 +1,17 @@
 import React, { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
+import PropTypes from "prop-types";
 
-const Navbar = () => {
+const Navbar = ({ overlay = false }) => {
   const [isFixed, setIsFixed] = useState(false);
   const [userName, setUserName] = useState(null);
+
+  let navStateClass = "relative";
+  if (isFixed) {
+    navStateClass = "fixed top-0 z-50 bg-slate-50/92 backdrop-blur-md shadow-[0_12px_36px_rgba(15,23,42,0.18)]";
+  } else if (overlay) {
+    navStateClass = "absolute top-0 left-0 z-40 bg-transparent";
+  }
 
   // Charger le nom de l'utilisateur depuis sessionStorage
   useEffect(() => {
@@ -24,9 +32,7 @@ const Navbar = () => {
     <header className="relative z-50">
       <nav
         id="navbar"
-        className={`w-full transition-all duration-300 ${
-          isFixed ? "fixed top-0 z-50 bg-slate-50/92 backdrop-blur-md shadow-[0_12px_36px_rgba(15,23,42,0.18)]" : "relative"
-        }`}
+        className={`w-full transition-all duration-300 ${navStateClass}`}
       >
         <div className="w-full max-w-7xl mx-auto px-3 md:px-5 py-3">
           <div className="relative flex flex-col lg:flex-row items-center gap-3 lg:gap-4 rounded-3xl border border-slate-200/90 bg-white/90 px-3 md:px-5 py-3 shadow-[0_10px_26px_rgba(1,103,156,0.14)]">
@@ -71,8 +77,8 @@ const Navbar = () => {
                     >
                       Bonjour, {userName}
                     </button>
-                    <ul className="hidden group-hover:block shadow-lg absolute right-0 mt-2 min-w-[180px] z-[1000]">
-                      <li className="glass-panel rounded-2xl p-3 w-full flex flex-col gap-2 text-sm">
+                    <ul className="hidden group-hover:block group-focus-within:block absolute right-0 top-full pt-1 min-w-[180px] z-[1000]">
+                      <li className="glass-panel rounded-2xl p-3 w-full flex flex-col gap-2 text-sm shadow-lg">
                         <Link to="/deconnexion" className="hover:text-secondary">Déconnexion</Link>
                       </li>
                     </ul>
@@ -85,8 +91,8 @@ const Navbar = () => {
                     >
                       Mon Compte
                     </button>
-                    <ul className="hidden group-hover:block shadow-lg absolute right-0 mt-2 min-w-[180px] z-[1000]">
-                      <li className="glass-panel rounded-2xl p-3 w-full flex flex-col gap-2 text-sm">
+                    <ul className="hidden group-hover:block group-focus-within:block absolute right-0 top-full pt-1 min-w-[180px] z-[1000]">
+                      <li className="glass-panel rounded-2xl p-3 w-full flex flex-col gap-2 text-sm shadow-lg">
                         <Link to="/connexion" className="hover:text-secondary">Connexion</Link>
                         <Link to="/inscription" className="hover:text-secondary">Inscription</Link>
                       </li>
@@ -100,6 +106,10 @@ const Navbar = () => {
       </nav>
     </header>
   );
+};
+
+Navbar.propTypes = {
+  overlay: PropTypes.bool,
 };
 
 export default Navbar;

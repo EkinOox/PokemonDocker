@@ -35,6 +35,18 @@
 		@apply bg-white/75 backdrop-blur-md border border-white/60 shadow-[0_18px_40px_rgba(1,103,156,0.16)];
 	}
 
+	.animate-fade-up {
+		animation: fadeUp 650ms ease-out both;
+	}
+
+	.animate-float-soft {
+		animation: floatSoft 5.2s ease-in-out infinite;
+	}
+
+	.animate-pulse-ring {
+		animation: pulseRing 2.8s ease-in-out infinite;
+	}
+
 	.pokemon-page {
 		@apply min-h-screen relative overflow-x-hidden;
 	}
@@ -46,5 +58,36 @@
 		background-image: radial-gradient(rgba(1, 103, 156, 0.08) 1px, transparent 1px);
 		background-size: 14px 14px;
 		pointer-events: none;
+	}
+}
+
+@keyframes fadeUp {
+	from {
+		opacity: 0;
+		transform: translateY(16px);
+	}
+	to {
+		opacity: 1;
+		transform: translateY(0);
+	}
+}
+
+@keyframes floatSoft {
+	0%,
+	100% {
+		transform: translateY(0px);
+	}
+	50% {
+		transform: translateY(-8px);
+	}
+}
+
+@keyframes pulseRing {
+	0%,
+	100% {
+		box-shadow: 0 0 0 0 rgba(248, 196, 0, 0.55);
+	}
+	50% {
+		box-shadow: 0 0 0 10px rgba(248, 196, 0, 0);
 	}
 }
