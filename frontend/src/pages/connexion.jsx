@@ -53,17 +53,18 @@ function ConnexionForm() {
   };
 
   return (
-    <div className="bg-gray-200 min-h-screen">
+    <div className="pokemon-page">
       <Navbar />
-      <div className="flex justify-center items-center h-screen bg-gray-50">
+      <div className="relative z-10 flex justify-center items-center min-h-[80vh] px-4 py-8">
         <form
           onSubmit={handleLogin}
-          className="border shadow-md p-4 bg-white rounded-md ml-5"
+          className="w-full max-w-md glass-panel rounded-3xl p-6 md:p-8"
         >
-          <h2 className="text-center font-bold">Connexion</h2>
+          <h2 className="text-center font-bold pokemon-title text-3xl text-slate-900">Connexion</h2>
+          <p className="text-center text-sm text-slate-500 mt-1">Reprends ta progression de dresseur</p>
 
           <div className="mt-5">
-            <label htmlFor="email">Email :</label>
+            <label htmlFor="email" className="text-sm font-semibold text-slate-700">Email :</label>
             <input
               type="email"
               name="email"
@@ -71,12 +72,12 @@ function ConnexionForm() {
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               required
-              className="border shadow-sm p-2 rounded-md w-full outline-none"
+              className="mt-1 border border-slate-200 shadow-sm p-2.5 rounded-xl w-full outline-none focus:border-secondary"
             />
           </div>
 
           <div className="mt-5">
-            <label htmlFor="password">Mot de Passe :</label>
+            <label htmlFor="password" className="text-sm font-semibold text-slate-700">Mot de Passe :</label>
             <input
               type="password"
               name="password"
@@ -84,7 +85,7 @@ function ConnexionForm() {
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               required
-              className="border shadow-sm p-2 rounded-md w-full outline-none"
+              className="mt-1 border border-slate-200 shadow-sm p-2.5 rounded-xl w-full outline-none focus:border-secondary"
             />
           </div>
 
@@ -98,7 +99,7 @@ function ConnexionForm() {
             <div className="mt-5">
               <button
                 type="submit"
-                className="bg-blue-500 text-white p-2 px-4 rounded-md shadow-md w-full hover:bg-blue-600 hover:duration-300"
+                className="bg-secondary text-white p-2.5 px-4 rounded-xl shadow-md w-full hover:brightness-110 transition"
               >
                 Se connecter
               </button>
@@ -109,7 +110,7 @@ function ConnexionForm() {
               <button
                 type="button"
                 onClick={handleLogout}
-                className="bg-red-500 text-white p-2 px-4 rounded-md shadow-md w-full hover:bg-red-600 hover:duration-300"
+                className="bg-red-500 text-white p-2 px-4 rounded-xl shadow-md w-full hover:bg-red-600 hover:duration-300"
               >
                 Se déconnecter
               </button>

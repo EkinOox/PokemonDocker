@@ -8,17 +8,13 @@ const Pokedex = () => {
   const [pokemons, setPokemons] = useState([]); 
   const [loading, setLoading] = useState(true);
   const navigate = useNavigate();
-  const [userName, setUserName] = useState('');
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedType, setSelectedType] = useState('');
   const [types, setTypes] = useState([]);
   
   useEffect(() => {
     const userData = sessionStorage.getItem('user');
-    if (userData) {
-      const user = JSON.parse(userData);
-      setUserName(user.name);
-    }else{
+    if (!userData) {
       navigate('/connexion');
     }
   }, []);
@@ -65,13 +61,13 @@ const Pokedex = () => {
   }
 
   return (
-    <div className="bg-gray-200">
+    <div className="pokemon-page">
       <Navbar />
       <Banner name="" />
 
       {/* Barre de filtres sticky */}
-      <div className="sticky top-0 z-40 bg-white/90 backdrop-blur-sm shadow-md border-b border-gray-200 px-4 py-4">
-        <div className="max-w-5xl mx-auto flex flex-col gap-3">
+      <div className="sticky top-0 z-40 px-4 py-4">
+        <div className="max-w-6xl mx-auto flex flex-col gap-3 glass-panel rounded-3xl px-4 md:px-5 py-4">
 
           {/* Recherche + compteur */}
           <div className="flex items-center gap-3">
@@ -84,7 +80,7 @@ const Pokedex = () => {
                 placeholder="Rechercher un Pokémon..."
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
-                className="w-full pl-9 pr-4 py-2 border-2 border-gray-200 rounded-full text-sm focus:outline-none focus:border-secondary transition-colors"
+                className="w-full pl-9 pr-4 py-2.5 border-2 border-slate-200 rounded-full text-sm focus:outline-none focus:border-secondary transition-colors bg-white/85"
               />
               {searchTerm && (
                 <button onClick={() => setSearchTerm('')} className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600">
@@ -98,7 +94,7 @@ const Pokedex = () => {
             {(searchTerm || selectedType) && (
               <button
                 onClick={() => { setSearchTerm(''); setSelectedType(''); }}
-                className="text-xs text-white bg-secondary px-3 py-1.5 rounded-full hover:opacity-80 transition whitespace-nowrap"
+                className="text-xs text-white bg-secondary px-3 py-1.5 rounded-full hover:brightness-110 transition whitespace-nowrap"
               >
                 Tout effacer
               </button>
@@ -111,8 +107,8 @@ const Pokedex = () => {
               onClick={() => setSelectedType('')}
               className={`flex-shrink-0 px-3 py-1.5 rounded-full text-xs font-bold border-2 transition-all ${
                 selectedType === ''
-                  ? 'bg-main border-main text-gray-800 shadow-sm'
-                  : 'bg-white border-gray-200 text-gray-600 hover:border-gray-400'
+                  ? 'bg-main border-main text-slate-900 shadow-sm'
+                  : 'bg-white/90 border-slate-200 text-slate-700 hover:border-gray-400'
               }`}
             >
               Tous
@@ -124,7 +120,7 @@ const Pokedex = () => {
                 className={`flex-shrink-0 flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-bold border-2 transition-all ${
                   selectedType === name
                     ? 'border-secondary bg-secondary text-white shadow-sm scale-105'
-                    : 'bg-white border-gray-200 text-gray-700 hover:border-secondary hover:text-secondary'
+                    : 'bg-white/90 border-slate-200 text-slate-700 hover:border-secondary hover:text-secondary'
                 }`}
               >
                 <img src={image} alt={name} className="w-4 h-4 object-contain" />
@@ -135,7 +131,7 @@ const Pokedex = () => {
         </div>
       </div>
       
-      <div className="grid grid-cols-4 gap-5">
+      <div className="relative z-10 max-w-7xl mx-auto px-4 md:px-6 py-8 grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-6">
         {filteredPokemons.map((pokemon) => {
           const firstType = pokemon.types?.[0]?.name?.toLowerCase();
 
@@ -152,35 +148,38 @@ const Pokedex = () => {
           ));
 
           return (
-            <div
+            <button
+              type="button"
               key={pokemon.pokedex_id}
-              className="bg-white shadow-lg rounded-lg m-4 transform transition-transform duration-300 hover:-translate-y-2 cursor-pointer"
+              className="group bg-white/90 border border-white/70 shadow-[0_16px_32px_rgba(15,23,42,0.12)] rounded-3xl overflow-hidden transform transition-all duration-300 hover:-translate-y-2 hover:shadow-[0_20px_40px_rgba(1,103,156,0.22)] cursor-pointer"
               onClick={() => navigate(`/pokemon/${pokemon.pokedex_id}`)}
             >
               <img
-                className="rounded-t-lg"
+                className="rounded-t-3xl h-48 w-full object-contain p-4 transition-transform duration-500 group-hover:scale-105"
                 src={pokemon.sprites?.regular || "https://via.placeholder.com/150"}
                 alt={pokemon.name?.fr || "Inconnu"}
                 style={{
-                  backgroundImage: `url('./assets/image/fond/${firstType}.jpg')`,
+                  backgroundImage: `linear-gradient(180deg, rgba(255,255,255,0.2), rgba(15,23,42,0.15)), url('./assets/image/fond/${firstType}.jpg')`,
                   backgroundSize: "cover",
                 }}
                 onMouseOver={(e) => (e.currentTarget.src = pokemon.sprites?.shiny || pokemon.sprites?.regular)}
                 onMouseOut={(e) => (e.currentTarget.src = pokemon.sprites?.regular || "")}
+                onFocus={(e) => (e.currentTarget.src = pokemon.sprites?.shiny || pokemon.sprites?.regular)}
+                onBlur={(e) => (e.currentTarget.src = pokemon.sprites?.regular || "")}
               />
-              <div className="p-4 rounded-b-md">
+              <div className="p-4 rounded-b-3xl">
                 <div className="flex">
-                  <h3 className="text-2xl"><strong>{pokemon.name?.fr || "Inconnu"}</strong></h3>
+                  <h3 className="text-2xl pokemon-title"><strong>{pokemon.name?.fr || "Inconnu"}</strong></h3>
                   <p className="mt-1 ml-auto text-lg font-medium text-gray-900 text-right flex justify-center">
                     {typesHTML.length > 0 ? typesHTML : <span>Aucun type</span>}
                   </p>
                 </div>
-                <div className="flex flex-col mb-5 mt-2">
-                  <p>{pokemon.stats.hp} HP</p>
-                  <p>{pokemon.stats.atk} ATK</p>
+                <div className="flex items-center gap-2 mb-5 mt-3 text-sm font-semibold text-slate-700">
+                  <span className="px-2 py-1 rounded-full bg-emerald-100">HP {pokemon.stats.hp}</span>
+                  <span className="px-2 py-1 rounded-full bg-rose-100">ATK {pokemon.stats.atk}</span>
                 </div>
               </div>
-            </div>
+            </button>
           );
         })}
       </div>

@@ -67,16 +67,17 @@ const Inscription = () => {
     };
 
     return (
-        <div className="bg-gray-200 min-h-screen">
+        <div className="pokemon-page">
             <Navbar />
-            <div className="flex justify-center items-center h-screen bg-gray-50">
+            <div className="relative z-10 flex justify-center items-center min-h-[80vh] px-4 py-8">
                 <form
                     onSubmit={handleSubmit}
-                    className="border shadow-md p-4 bg-white rounded-md w-1/3"
+                    className="w-full max-w-lg glass-panel rounded-3xl p-6 md:p-8"
                 >
-                    <h2 className="text-center font-bold">Inscription</h2>
+                    <h2 className="text-center font-bold pokemon-title text-3xl text-slate-900">Inscription</h2>
+                    <p className="text-center text-sm text-slate-500 mt-1">Crée ton profil dresseur en quelques secondes</p>
                     <div>
-                        <label htmlFor="name">Pseudo :</label>
+                        <label htmlFor="name" className="text-sm font-semibold text-slate-700">Pseudo :</label>
                         <input
                             type="text"
                             name="name"
@@ -84,11 +85,11 @@ const Inscription = () => {
                             value={name}
                             onChange={(e) => setName(e.target.value)}
                             required
-                            className="border shadow-sm p-2 rounded-md w-full outline-none"
+                            className="mt-1 border border-slate-200 shadow-sm p-2.5 rounded-xl w-full outline-none focus:border-secondary"
                         />
                     </div>
                     <div className="mt-5">
-                        <label htmlFor="email">Email :</label>
+                        <label htmlFor="email" className="text-sm font-semibold text-slate-700">Email :</label>
                         <input
                             type="email"
                             name="email"
@@ -96,11 +97,11 @@ const Inscription = () => {
                             value={email}
                             onChange={(e) => setEmail(e.target.value)}
                             required
-                            className="border shadow-sm p-2 rounded-md w-full outline-none"
+                            className="mt-1 border border-slate-200 shadow-sm p-2.5 rounded-xl w-full outline-none focus:border-secondary"
                         />
                     </div>
                     <div className="mt-5">
-                        <label htmlFor="password">Mot de Passe :</label>
+                        <label htmlFor="password" className="text-sm font-semibold text-slate-700">Mot de Passe :</label>
                         <input
                             type="password"
                             name="password"
@@ -108,11 +109,11 @@ const Inscription = () => {
                             value={password}
                             onChange={(e) => setPassword(e.target.value)}
                             required
-                            className="border shadow-sm p-2 rounded-md w-full outline-none"
+                            className="mt-1 border border-slate-200 shadow-sm p-2.5 rounded-xl w-full outline-none focus:border-secondary"
                         />
                     </div>
                     <div className="mt-5">
-                        <label htmlFor="password_verify">Confirmation :</label>
+                        <label htmlFor="password_verify" className="text-sm font-semibold text-slate-700">Confirmation :</label>
                         <input
                             type="password"
                             name="password_verify"
@@ -120,7 +121,7 @@ const Inscription = () => {
                             value={passwordVerify}
                             onChange={(e) => setPasswordVerify(e.target.value)}
                             required
-                            className="border shadow-sm p-2 rounded-md w-full outline-none"
+                            className="mt-1 border border-slate-200 shadow-sm p-2.5 rounded-xl w-full outline-none focus:border-secondary"
                         />
                     </div>
                     {errorMessage && (
@@ -136,7 +137,7 @@ const Inscription = () => {
                     <div className="mt-5">
                         <button
                             type="submit"
-                            className="bg-blue-500 text-white p-2 px-4 rounded-md shadow-md w-full hover:bg-blue-600 hover:duration-300"
+                            className="bg-secondary text-white p-2.5 px-4 rounded-xl shadow-md w-full hover:brightness-110 transition"
                         >
                             S'inscrire
                         </button>

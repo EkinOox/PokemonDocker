@@ -1,3 +1,50 @@
+@import url('https://fonts.googleapis.com/css2?family=Chakra+Petch:wght@400;500;600;700&family=Space+Grotesk:wght@400;500;600;700&display=swap');
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+@layer base {
+	body {
+		margin: 0;
+		font-family: 'Space Grotesk', sans-serif;
+		background:
+			radial-gradient(circle at 10% -10%, #fde68a 0%, transparent 45%),
+			radial-gradient(circle at 90% 0%, #7dd3fc 0%, transparent 35%),
+			linear-gradient(160deg, #f8fafc 0%, #eef2ff 45%, #fef3c7 100%);
+		color: #0f172a;
+	}
+
+	h1,
+	h2,
+	h3,
+	h4,
+	.pokemon-title {
+		font-family: 'Chakra Petch', sans-serif;
+		letter-spacing: 0.015em;
+	}
+
+	::selection {
+		background: #f8c400;
+		color: #0f172a;
+	}
+}
+
+@layer utilities {
+	.glass-panel {
+		@apply bg-white/75 backdrop-blur-md border border-white/60 shadow-[0_18px_40px_rgba(1,103,156,0.16)];
+	}
+
+	.pokemon-page {
+		@apply min-h-screen relative overflow-x-hidden;
+	}
+
+	.pokemon-page::before {
+		content: '';
+		position: absolute;
+		inset: 0;
+		background-image: radial-gradient(rgba(1, 103, 156, 0.08) 1px, transparent 1px);
+		background-size: 14px 14px;
+		pointer-events: none;
+	}
+}
